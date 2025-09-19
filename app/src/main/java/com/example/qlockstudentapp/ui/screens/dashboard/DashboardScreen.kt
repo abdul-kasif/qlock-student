@@ -7,9 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.qlockstudentapp.utils.AuthManager
 
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(navController: NavHostController = rememberNavController()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -17,14 +20,31 @@ fun DashboardScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "QLock",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 20.dp)
-        )
+        // Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "QLock",
+                style = MaterialTheme.typography.headlineLarge
+            )
 
-        Button(onClick = { /* TODO: Logout */ }) {
-            Text("Logout")
+            Button(
+                onClick = {
+                    // Logout
+                    AuthManager.logOut(navController.context)
+                    navController.navigate("email_otp") {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Logout")
+            }
         }
 
         Spacer(modifier = Modifier.height(40.dp))
