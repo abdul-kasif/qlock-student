@@ -33,10 +33,15 @@ fun DashboardScreen(navController: NavHostController = rememberNavController()) 
 
             Button(
                 onClick = {
-                    // Logout
-                    AuthManager.logOut(navController.context)
+                    // 1. Clear token
+                    AuthManager.logout(navController.context)
+
+                    // 2. Navigate to EmailOtpScreen and CLEAR entire back stack
                     navController.navigate("email_otp") {
-                        popUpTo("dashboard") { inclusive = true }
+                        popUpTo(navController.graph.startDestinationId) { // Clear all screens up to start destination
+                            inclusive = false // Keep EmailOtpScreen
+                        }
+                        launchSingleTop = true // Avoid duplicate instances
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

@@ -29,6 +29,11 @@ fun EmailOtpScreen(
     val isLoading by authViewModel::isLoading
     val errorMessage by authViewModel::errorMessage
 
+    LaunchedEffect(Unit) {
+        authViewModel.onEmailChanged("")
+        authViewModel.onOtpChanged("")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
