@@ -5,9 +5,11 @@ import com.example.qlockstudentapp.model.request.SendOtpRequest
 import com.example.qlockstudentapp.model.request.VerifyOtpRequest
 import com.example.qlockstudentapp.model.response.ApiResponse
 import com.example.qlockstudentapp.model.response.ProfileResponse
+import com.example.qlockstudentapp.model.response.StudentDashboardResponse
 import com.example.qlockstudentapp.model.response.VerifyOtpResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -19,5 +21,9 @@ interface ApiService {
 
     @POST("profile")
     suspend fun setupProfile(@Body request: ProfileSetupRequest): Response<ProfileResponse>
+
+    @GET("dashboard")
+    suspend fun getStudentDashboard(): Response<StudentDashboardResponse>
+
 }
 

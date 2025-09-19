@@ -14,6 +14,6 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "email_otp") {
         composable("email_otp") { EmailOtpScreen(navController) }
         composable("profile_setup") { ProfileSetupScreen(navController) }
-        composable("dashboard") { DashboardScreen() }
+        composable("dashboard") { DashboardScreen(navController) }
     }
 }
