@@ -10,14 +10,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.qlockstudentapp.ui.components.dashboard.DashboardContent
 import com.example.qlockstudentapp.utils.AuthManager
+import com.example.qlockstudentapp.viewmodel.TestSessionViewModel // ✅ Add this import
+import java.net.URLEncoder
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavHostController) {
+    // ✅ Initialize TestSessionViewModel here
+    val testSessionViewModel: TestSessionViewModel = viewModel()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -57,11 +63,16 @@ fun DashboardScreen(navController: NavHostController) {
         content = { paddingValues ->
             DashboardContent(
                 modifier = Modifier.padding(paddingValues),
+                // ✅ Pass the callback that uses testSessionViewModel + navController
                 onJoinTest = { accessCode ->
-                    // TODO: Navigate to Lockdown Screen
+                    testSessionViewModel.startTestSession(accessCode) { session ->
+                        navController.navigate(
+                            "lockdown/${session.id}/${session.title}/${URLEncoder.encode(session.google_form_url, "UTF-8")}/${session.test_duration_minutes}"
+                        )
+                    }
                 },
                 onInvalidAccessCode = {
-                    // TODO: Show message or error
+                    // TODO: Show error message
                 }
             )
         }
