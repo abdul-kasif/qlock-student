@@ -1,16 +1,33 @@
+// ui/screens/lockdown/LockdownScreen.kt
 package com.example.qlockstudentapp.ui.screens.lockdown
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.qlockstudentapp.ui.components.lockdown.LockdownHeader
+import com.example.qlockstudentapp.ui.components.lockdown.LockdownWebView
 import com.example.qlockstudentapp.utils.CountDownTimer
-import kotlinx.coroutines.*
+import com.example.qlockstudentapp.utils.LockdownManager
+import com.example.qlockstudentapp.viewmodel.TestSubmissionViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("SetJavaScriptEnabled")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LockdownScreen(
     navController: NavHostController,
@@ -19,10 +36,19 @@ fun LockdownScreen(
     googleFormUrl: Any?,
     testDurationMinutes: Int
 ) {
+    val context = LocalContext.current
+    val testSubmissionViewModel: TestSubmissionViewModel = viewModel()
     val totalSeconds = testDurationMinutes * 60L
     var timeLeft by remember { mutableLongStateOf(totalSeconds) }
     var isTimerRunning by remember { mutableStateOf(true) }
+    var isSubmitting by remember { mutableStateOf(false) }
 
+    // Initialize lockdown features
+    LaunchedEffect(Unit) {
+        enableLockdownMode(context)
+    }
+
+    // Initialize timer
     val timer = remember {
         CountDownTimer(
             totalSeconds = totalSeconds,
@@ -30,99 +56,173 @@ fun LockdownScreen(
                 timeLeft = seconds
             },
             onFinish = {
-                // Auto-submit when timer ends
                 CoroutineScope(Dispatchers.Main).launch {
-                    // TODO: Call submit API
-                    navController.navigate("dashboard") {
-                        popUpTo("lockdown") { inclusive = true }
-                    }
+                    handleAutoSubmit(
+                        testSubmissionViewModel = testSubmissionViewModel,
+                        sessionId = sessionId,
+                        context = context,
+                        navController = navController
+                    )
                 }
             }
-        )
+        ).apply { start() }
     }
 
-    // Start timer when screen is composed
-    LaunchedEffect(Unit) {
-        timer.start()
-    }
-
-    // Cleanup timer when screen is disposed
+    // Cleanup on exit
     DisposableEffect(Unit) {
         onDispose {
             timer.cancel()
+            disableLockdownMode(context)
         }
     }
 
+    // Main UI
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .systemBarsPadding()
     ) {
-        // Timer Display
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (timeLeft < 60) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Test: $title",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                )
-                Text(
-                    text = formatTime(timeLeft),
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                )
+        // Fixed Header
+        LockdownHeader(
+            testTitle = title,
+            timeLeft = timeLeft,
+            onExitRequest = {
+                // Show warning — cannot exit manually
+                Toast.makeText(context, "You cannot exit until test is submitted.", Toast.LENGTH_LONG).show()
             }
-        }
+        )
 
-        // WebView Placeholder (will replace later)
+        // WebView Container
         Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .weight(1f)
-                .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center
+                .padding(8.dp)
         ) {
-            Text(
-                text = "WebView will load Google Form here",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary
+            LockdownWebView(
+                url = googleFormUrl as String,
+                onWebViewLoaded = {
+                    // Optional: track when form is loaded
+                }
             )
         }
 
-        // Submit Button
-        Button(
-            onClick = {
-                timer.cancel()
-                // TODO: Call submit API
-                navController.navigate("dashboard") {
-                    popUpTo("lockdown") { inclusive = true }
-                }
-            },
+        // Fixed Submit Button (Bottom)
+        Surface(
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            )
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 8.dp
         ) {
-            Text("Submit Test")
+            Button(
+                onClick = {
+                    if (isSubmitting) return@Button
+                    isSubmitting = true
+                    timer.cancel()
+                    handleManualSubmit(
+                        testSubmissionViewModel = testSubmissionViewModel,
+                        sessionId = sessionId,
+                        context = context,
+                        navController = navController,
+                        onComplete = { isSubmitting = false }
+                    )
+                },
+                enabled = !isSubmitting,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSubmitting) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.error
+                )
+            ) {
+                if (isSubmitting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                } else {
+                    Text(
+                        text = "SUBMIT TEST",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onError
+                        )
+                    )
+                }
+            }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun enableLockdownMode(context: Context) {
+    val activity = LockdownManager.getCurrentActivity(context)
+    activity?.let {
+        LockdownManager.enableLockdownMode(it)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun disableLockdownMode(context: Context) {
+    val activity = LockdownManager.getCurrentActivity(context)
+    activity?.let {
+        LockdownManager.disableLockdownMode(it)
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun handleAutoSubmit(
+    testSubmissionViewModel: TestSubmissionViewModel,
+    sessionId: Long,
+    context: Context,
+    navController: NavHostController
+) {
+    testSubmissionViewModel.submitTestSession(
+        sessionId = sessionId,
+        onSuccess = {
+            disableLockdownMode(context)
+            navController.navigate("dashboard") {
+                popUpTo("lockdown") { inclusive = true }
+            }
+        },
+        onError = { errorMessage ->
+            // Still navigate to dashboard even if submit fails (timer ended — user should not be trapped)
+            disableLockdownMode(context)
+            navController.navigate("dashboard") {
+                popUpTo("lockdown") { inclusive = true }
+            }
+            Toast.makeText(context, "Auto-submit failed: $errorMessage", Toast.LENGTH_LONG).show()
+        }
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun handleManualSubmit(
+    testSubmissionViewModel: TestSubmissionViewModel,
+    sessionId: Long,
+    context: Context,
+    navController: NavHostController,
+    onComplete: () -> Unit
+) {
+    testSubmissionViewModel.submitTestSession(
+        sessionId = sessionId,
+        onSuccess = {
+            disableLockdownMode(context)
+            navController.navigate("dashboard") {
+                popUpTo("lockdown") { inclusive = true }
+            }
+            onComplete()
+        },
+        onError = { errorMessage ->
+            disableLockdownMode(context)
+            navController.navigate("dashboard") {
+                popUpTo("lockdown") { inclusive = true }
+            }
+            Toast.makeText(context, "Submit failed: $errorMessage", Toast.LENGTH_LONG).show()
+            onComplete()
+        }
+    )
 }
 
 fun formatTime(seconds: Long): String {
