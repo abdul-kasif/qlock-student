@@ -13,7 +13,6 @@ import com.example.qlockstudentapp.ui.screens.dashboard.DashboardScreen
 import com.example.qlockstudentapp.ui.screens.auth.EmailOtpScreen
 import com.example.qlockstudentapp.ui.screens.profile.ProfileSetupScreen
 import com.example.qlockstudentapp.ui.screens.splash.SplashScreen
-import com.example.qlockstudentapp.ui.screens.quiz.QuizLockdownScreen
 import com.example.qlockstudentapp.ui.screens.quiz.QuizResultScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -24,14 +23,6 @@ fun AppNavigation(navController: NavHostController) {
         composable("email_otp") { EmailOtpScreen(navController) }
         composable("profile_setup") { ProfileSetupScreen(navController) }
         composable("dashboard") { DashboardScreen(navController) }
-
-        composable(
-            route = "quiz_lockdown/{accessCode}",
-            arguments = listOf(navArgument("accessCode") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val accessCode = backStackEntry.arguments?.getString("accessCode") ?: ""
-            QuizLockdownScreen(navController, accessCode)
-        }
 
         composable(
             route = "quiz_result/{score}",
