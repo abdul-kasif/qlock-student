@@ -1,3 +1,4 @@
+// viewmodel/DashboardViewModel.kt
 package com.example.qlockstudentapp.viewmodel
 
 import android.app.Application
@@ -15,24 +16,38 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     var dashboardData by mutableStateOf<StudentDashboardResponse?>(null)
         private set
+
     var isLoading by mutableStateOf(false)
         private set
+
     var errorMessage by mutableStateOf("")
         private set
 
+    fun clearError() {
+        errorMessage = ""
+    }
+
     fun loadDashboard() {
+        clearError()
         isLoading = true
         viewModelScope.launch {
             try {
                 val context = getApplication<Application>().applicationContext
                 val response = ApiClient.getApiService(context).getStudentDashboard()
 
-                if (response.isSuccessful && response.body() != null) {
-                    dashboardData = response.body()
-                    Log.d("DashboardViewModel", "Dashboard loaded successfully")
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        dashboardData = body
+                        Log.d("DashboardViewModel", "Dashboard loaded successfully")
+                    } else {
+                        errorMessage = "Unexpected response from server."
+                        Log.e("DashboardViewModel", "Empty body in response")
+                    }
                 } else {
-                    errorMessage = "Failed to load dashboard. Please try again."
-                    Log.e("DashboardViewModel", "Load failed: ${response.errorBody()?.string()}")
+                    val error = response.errorBody()?.string() ?: "Unknown error"
+                    errorMessage = "Failed to load dashboard: $error"
+                    Log.e("DashboardViewModel", "Load failed: $error")
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error. Check your connection."
