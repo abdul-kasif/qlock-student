@@ -2,28 +2,29 @@
 package com.example.qlockstudentapp.utils
 
 import android.app.Activity
-import android.content.Context
-import android.view.WindowManager
+import android.os.Build
+import android.widget.Toast
 
 object LockdownManager {
-
     fun enableLockdownMode(activity: Activity) {
-        // Block screenshots
-        activity.window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
-
-        // Optional: Disable recent apps button (requires Device Admin)
-        // Not enabled by default — needs special permissions
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // startLockTask will pin the activity
+                activity.startLockTask()
+            }
+        } catch (t: Throwable) {
+            // best-effort; show user feedback
+            Toast.makeText(activity, "Unable to enable lockdown mode on this device.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun disableLockdownMode(activity: Activity) {
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    }
-
-    // Helper to get current activity
-    fun getCurrentActivity(context: Context): Activity? {
-        return context as? Activity
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.stopLockTask()
+            }
+        } catch (t: Throwable) {
+            // ignore
+        }
     }
 }

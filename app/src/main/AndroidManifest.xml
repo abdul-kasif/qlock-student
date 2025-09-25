@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QLockStudentApp">
-
+        <activity android:name=".ui.screens.quiz.QuizLockdownActivity" android:exported="false" />
+        <activity android:name=".ui.screens.quiz.QuizResultActivity" android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.qlockstudentapp.ui.components.dashboard.DashboardContent
+import com.example.qlockstudentapp.ui.screens.quiz.QuizLockdownActivity
 import com.example.qlockstudentapp.utils.AuthManager
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -58,7 +59,7 @@ fun DashboardScreen(navController: NavHostController) {
                 modifier = Modifier.padding(paddingValues),
                 navController = navController,
                 onJoinTest = { accessCode ->
-                    navController.navigate("quiz_lockdown/$accessCode")
+                    QuizLockdownActivity.launch(navController.context, accessCode)
                 },
                 onInvalidAccessCode = {
                     // TODO: Show error message (e.g., Toast or Snackbar)
