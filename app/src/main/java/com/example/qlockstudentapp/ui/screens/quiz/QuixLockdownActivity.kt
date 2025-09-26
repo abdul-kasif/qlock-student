@@ -1,4 +1,3 @@
-// ui/screens/quiz/QuizLockdownActivity.kt
 package com.example.qlockstudentapp.ui.screens.quiz
 
 import android.content.Context
@@ -7,11 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
 import com.example.qlockstudentapp.ui.theme.QLockStudentAppTheme
 import com.example.qlockstudentapp.utils.LockdownManager
 import com.example.qlockstudentapp.viewmodel.QuizViewModel
@@ -33,11 +33,12 @@ class QuizLockdownActivity : ComponentActivity() {
     private val quizViewModel: QuizViewModel by viewModels()
     private lateinit var accessCode: String
     private var hasSubmitted = false
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Block screenshots & recording
+        // 🚫 Block screenshots & screen recording
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
@@ -45,19 +46,45 @@ class QuizLockdownActivity : ComponentActivity() {
 
         accessCode = intent.getStringExtra(EXTRA_ACCESS_CODE) ?: ""
 
-        // Enable pinned mode (best-effort)
+        // 🚫 Force Lockdown Mode (shows "Start / No Thanks" dialog)
         LockdownManager.enableLockdownMode(this)
+
+        // 🚫 Block back press (Android 12 and below)
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    Toast.makeText(
+                        this@QuizLockdownActivity,
+                        "Back is disabled during the quiz.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        )
+
+        // 🚫 Block back gestures on Android 13+ (API 33)
+        if (Build.VERSION.SDK_INT >= 33) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                Toast.makeText(
+                    this,
+                    "Back is disabled during the quiz.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
         setContent {
             QLockStudentAppTheme {
-                // Pass the same viewModel instance into the composable
-                QuizLockdownScreenHost(accessCode = accessCode, quizViewModel = quizViewModel,
+                QuizLockdownScreenHost(
+                    accessCode = accessCode,
+                    quizViewModel = quizViewModel,
                     onQuizSubmit = { score ->
-                        // prevent double handling
                         if (hasSubmitted) return@QuizLockdownScreenHost
                         hasSubmitted = true
                         LockdownManager.disableLockdownMode(this)
-                        // Launch result screen (Activity) and finish lockdown
                         QuizResultActivity.start(this, score)
                         finish()
                     },
@@ -73,16 +100,10 @@ class QuizLockdownActivity : ComponentActivity() {
         }
     }
 
-    fun onBackPressedDispatcher() {
-        // Block back navigation while lockdown is active
-        Toast.makeText(this, "You cannot exit during the quiz.", Toast.LENGTH_SHORT).show()
-    }
-
     override fun onStop() {
         super.onStop()
-        // triggered when app loses focus (e.g., Home/Recents). Auto-submit once.
+        // Auto-submit if student leaves quiz before finishing
         if (!hasSubmitted && quizViewModel.quiz != null) {
-            // call submitQuiz; backend ensures single submission
             quizViewModel.submitQuiz(
                 onSuccess = { response ->
                     hasSubmitted = true
