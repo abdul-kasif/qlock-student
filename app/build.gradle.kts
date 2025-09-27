@@ -58,6 +58,7 @@ dependencies {
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.activity:activity:1.6.0-alpha05")
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
