@@ -32,10 +32,10 @@ class QuizValidationViewModel(application: Application) : AndroidViewModel(appli
         viewModelScope.launch {
             try {
                 val context = getApplication<Application>().applicationContext
-                val response = ApiClient.getApiService(context).getQuizByAccessCode(accessCode)
+                val response = ApiClient.getApiService(context).checkCodeValidity(accessCode)
 
                 if (response.isSuccessful && response.body() != null) {
-                    Log.d("QuizValidationViewModel", "Access code valid: ${response.body()!!.quiz.title}")
+                    Log.d("QuizValidationViewModel", "Access code valid")
                     onSuccess()
                 } else {
                     val error = response.errorBody()?.string()?.let { parseErrorMessage(it) }

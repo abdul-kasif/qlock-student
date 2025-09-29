@@ -8,6 +8,7 @@ import com.example.qlockstudentapp.model.response.ApiResponse
 import com.example.qlockstudentapp.model.response.ProfileResponse
 import com.example.qlockstudentapp.model.response.QuizAccessResponse
 import com.example.qlockstudentapp.model.response.QuizSubmissionResponse
+import com.example.qlockstudentapp.model.response.QuizValidateResponse
 import com.example.qlockstudentapp.model.response.StudentDashboardResponse
 import com.example.qlockstudentapp.model.response.VerifyOtpResponse
 import retrofit2.Response
@@ -30,13 +31,19 @@ interface ApiService {
     suspend fun getStudentDashboard(): Response<StudentDashboardResponse>
 
     @GET("student_quizzes/access/{access_code}")
-    suspend fun getQuizByAccessCode(
+    suspend fun checkCodeValidity(
         @Path("access_code") accessCode: String
-    ): Response<QuizAccessResponse>
+    ): Response<QuizValidateResponse>
+
 
     @POST("quiz_submissions")
     suspend fun submitQuiz(
         @Body request: QuizSubmissionRequest
     ): Response<QuizSubmissionResponse>
+
+    @GET("quiz_submissions/{access_code}")
+    suspend fun getQuizByAccessCode(
+        @Path("access_code") accessCode: String
+    ): Response<QuizAccessResponse>
 }
 
