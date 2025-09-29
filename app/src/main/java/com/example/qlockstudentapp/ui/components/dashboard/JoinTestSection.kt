@@ -3,10 +3,12 @@ package com.example.qlockstudentapp.ui.components.dashboard
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -31,7 +33,8 @@ fun JoinTestSection(
             value = accessCode,
             onValueChange = { accessCode = it },
             label = { Text("Enter 6-digit Access Code") },
-            placeholder = { Text("e.g. XK9Q2M") },
+            placeholder = { Text("e.g. 281104") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             singleLine = true,
             maxLines = 1,
             modifier = Modifier
