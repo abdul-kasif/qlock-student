@@ -81,7 +81,6 @@ fun EmailOtpScreen(
                 onValueChange = authViewModel::onOtpChanged,
                 label = { Text("Enter 6-digit OTP") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
                 maxLines = 1,
                 modifier = Modifier.fillMaxWidth()
