@@ -1,7 +1,7 @@
-// ui/screens/dashboard/DashboardScreen.kt
 package com.example.qlockstudentapp.ui.screens.dashboard
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -9,17 +9,24 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.qlockstudentapp.ui.components.dashboard.DashboardContent
 import com.example.qlockstudentapp.ui.screens.quiz.QuizLockdownActivity
 import com.example.qlockstudentapp.utils.AuthManager
+import com.example.qlockstudentapp.viewmodel.QuizValidationViewModel // ✅ Add import
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val quizValidationViewModel: QuizValidationViewModel = viewModel() // ✅ Initialize
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,10 +66,19 @@ fun DashboardScreen(navController: NavHostController) {
                 modifier = Modifier.padding(paddingValues),
                 navController = navController,
                 onJoinTest = { accessCode ->
-                    QuizLockdownActivity.launch(navController.context, accessCode)
+                    // ✅ Validate BEFORE launching activity
+                    quizValidationViewModel.validateAccessCode(
+                        accessCode = accessCode,
+                        onSuccess = {
+                            QuizLockdownActivity.launch(context, accessCode)
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        }
+                    )
                 },
                 onInvalidAccessCode = {
-                    // TODO: Show error message (e.g., Toast or Snackbar)
+                    Toast.makeText(context, "Please enter a 6-digit access code", Toast.LENGTH_SHORT).show()
                 }
             )
         }
