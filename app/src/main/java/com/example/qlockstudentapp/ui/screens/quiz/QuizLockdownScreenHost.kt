@@ -15,5 +15,5 @@ fun QuizLockdownScreenHost(
     onQuizError: (String) -> Unit
 ) {
     // This composable simply forwards to the UI composable that uses the same viewModel instance
-    QuizLockdownScreenComposable(accessCode = accessCode, quizViewModel = quizViewModel, onQuizSubmit = onQuizSubmit, onQuizError = onQuizError)
+    QuizLockdownScreen(accessCode = accessCode, quizViewModel = quizViewModel, onQuizSubmit = onQuizSubmit, onQuizError = onQuizError)
 }
