@@ -75,7 +75,12 @@ dependencies {
     // Lifecycle + ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
+    // Material Icons
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
+
     implementation(libs.androidx.compose.ui.text)
+    implementation(libs.espresso.core)
 
     // Test
     testImplementation(libs.junit)
