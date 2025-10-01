@@ -33,7 +33,6 @@ fun DashboardContent(
     LaunchedEffect(Unit) {
         dashboardViewModel.loadDashboard()
     }
-
     LazyColumn(
         modifier = modifier
             .fillMaxSize()

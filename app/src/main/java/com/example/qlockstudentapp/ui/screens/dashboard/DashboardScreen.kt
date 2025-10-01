@@ -69,8 +69,9 @@ fun DashboardScreen(navController: NavHostController) {
                     // ✅ Validate BEFORE launching activity
                     quizValidationViewModel.validateAccessCode(
                         accessCode = accessCode,
-                        onSuccess = {
-                            QuizLockdownActivity.launch(context, accessCode)
+                        onSuccess = { quizTitle, timeLimitMinutes ->
+                            // Navigate to permission screen with data
+                            navController.navigate("quiz_permission/$quizTitle/$timeLimitMinutes/$accessCode")
                         },
                         onError = { errorMessage ->
                             Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
