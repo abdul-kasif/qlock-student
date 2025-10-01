@@ -1,26 +1,21 @@
 package com.example.qlockstudentapp.utils
 
 import android.app.Activity
-import android.widget.Toast
+import android.os.Build
+import android.view.WindowManager
 
 object LockdownManager {
+
+    /** Enable secure flags to block screenshots */
     fun enableLockdownMode(activity: Activity) {
-        try {
-            activity.startLockTask()
-        } catch (t: Throwable) {
-            Toast.makeText(
-                activity,
-                "Unable to enable lockdown mode on this device.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        activity.window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
     }
 
+    /** Remove secure flags */
     fun disableLockdownMode(activity: Activity) {
-        try {
-            activity.stopLockTask()
-        } catch (t: Throwable) {
-            // ignore
-        }
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 }

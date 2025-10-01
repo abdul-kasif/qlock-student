@@ -17,8 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.qlockstudentapp.viewmodel.QuizViewModel
+import com.example.qlockstudentapp.viewmodel.QuizViewModel // ✅ No viewModel() here
 import com.example.qlockstudentapp.model.response.Question
 import com.example.qlockstudentapp.ui.components.lockdown.LockdownHeader
 
@@ -28,11 +27,11 @@ import com.example.qlockstudentapp.ui.components.lockdown.LockdownHeader
 @Composable
 fun QuizLockdownScreen(
     accessCode: String,
+    quizViewModel: QuizViewModel, // ✅ Passed from Activity
     onQuizSubmit: (score: Int) -> Unit,
     onQuizError: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val quizViewModel: QuizViewModel = viewModel()
     var currentQuestionIndex by remember { mutableStateOf(0) }
     var isSubmitting by remember { mutableStateOf(false) }
 
@@ -56,7 +55,9 @@ fun QuizLockdownScreen(
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        ) {
+            CircularProgressIndicator()
+        }
         return
     }
 
@@ -73,7 +74,6 @@ fun QuizLockdownScreen(
             }
         )
 
-        // Show current question
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -92,7 +92,6 @@ fun QuizLockdownScreen(
             }
         }
 
-        // Navigation & Submit
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,14 +102,18 @@ fun QuizLockdownScreen(
                 OutlinedButton(
                     onClick = { currentQuestionIndex-- },
                     shape = RoundedCornerShape(12.dp)
-                ) { Text("Previous") }
+                ) {
+                    Text("Previous")
+                }
             }
 
             if (currentQuestionIndex < quiz.questions.size - 1) {
                 Button(
                     onClick = { currentQuestionIndex++ },
                     shape = RoundedCornerShape(12.dp)
-                ) { Text("Next") }
+                ) {
+                    Text("Next")
+                }
             } else {
                 Button(
                     onClick = {
@@ -132,13 +135,14 @@ fun QuizLockdownScreen(
                             strokeWidth = 3.dp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
-                    } else Text("Submit Quiz")
+                    } else {
+                        Text("Submit Quiz")
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
 fun QuestionCard(
     question: Question,
