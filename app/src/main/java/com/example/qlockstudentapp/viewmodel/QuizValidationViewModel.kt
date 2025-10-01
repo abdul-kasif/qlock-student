@@ -22,7 +22,7 @@ class QuizValidationViewModel(application: Application) : AndroidViewModel(appli
         errorMessage = ""
     }
 
-    fun validateAccessCode(accessCode: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun validateAccessCode(accessCode: String, onSuccess: (String, Int) -> Unit, onError: (String) -> Unit) {
         if (accessCode.isBlank()) {
             onError("Access code cannot be empty")
             return
@@ -35,8 +35,9 @@ class QuizValidationViewModel(application: Application) : AndroidViewModel(appli
                 val response = ApiClient.getApiService(context).checkCodeValidity(accessCode)
 
                 if (response.isSuccessful && response.body() != null) {
+                    val quiz = response.body()!!.quiz
                     Log.d("QuizValidationViewModel", "Access code valid")
-                    onSuccess()
+                    onSuccess(quiz.title, quiz.time_limit_minutes)
                 } else {
                     val error = response.errorBody()?.string()?.let { parseErrorMessage(it) }
                         ?: "Invalid or expired access code"
