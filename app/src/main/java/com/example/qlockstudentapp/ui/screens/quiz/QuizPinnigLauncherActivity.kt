@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import com.example.qlockstudentapp.MainActivity
 
 class QuizPinningLauncherActivity : ComponentActivity() {
 
@@ -29,7 +30,7 @@ class QuizPinningLauncherActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         accessCode = intent.getStringExtra("accessCode") ?: return finish()
 
-        // Minimal Compose content to avoid black/white flash
+        // Minimal Compose content (loading UI)
         setContent {
             androidx.compose.material3.Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -45,14 +46,14 @@ class QuizPinningLauncherActivity : ComponentActivity() {
             }
         }
 
-        // Request pinning (shows system dialog)
+        // Request pinning (system dialog appears)
         startLockTask()
 
         // Start polling lock task state
         pollLockTaskState()
     }
 
-    private fun pollLockTaskState() {
+    private fun pollLockTaskState(attempt: Int = 0) {
         val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
         window.decorView.postDelayed({
@@ -63,22 +64,31 @@ class QuizPinningLauncherActivity : ComponentActivity() {
                         quizLaunched = true
                         QuizLockdownActivity.launch(this, accessCode)
                     }
-                    !hasWindowFocus() -> {
-                        // ❌ User declined ("No Thanks")
+                    attempt >= 5 -> {
+                        // ❌ User declined after ~3s
                         declinedHandled = true
                         Toast.makeText(this, "Screen pinning declined", Toast.LENGTH_SHORT).show()
-                        finish() // or navigate to DashboardActivity.start(this)
+                        navigateToDashboard()
                     }
-                    else -> pollLockTaskState()
+                    else -> {
+                        pollLockTaskState(attempt + 1)
+                    }
                 }
             }
-        }, 300) // check every 300ms
+        }, 300)
+    }
+    private fun navigateToDashboard() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("goTo", "dashboard")
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finishAffinity()
     }
 
     override fun onPause() {
         super.onPause()
         if (quizLaunched) {
-            finish() // safe to close launcher after launching quiz
+            finish() // only close launcher after quiz started
         }
     }
 }
