@@ -1,5 +1,7 @@
 package com.example.qlockstudentapp.ui.screens.quiz
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -37,12 +39,6 @@ class QuizLockdownActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 🚫 Block screenshots & screen recording
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
 
         accessCode = intent.getStringExtra(EXTRA_ACCESS_CODE) ?: ""
 
@@ -118,6 +114,19 @@ class QuizLockdownActivity : ComponentActivity() {
                     finish()
                 }
             )
+        }
+    }
+
+    @SuppressLint("ServiceCast")
+    override fun onResume() {
+        super.onResume()
+        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+            am.lockTaskModeState == ActivityManager.LOCK_TASK_MODE_NONE
+        ) {
+            // User did not accept pinning → return to dashboard
+            Toast.makeText(this, "Screen pinning not enabled. Returning to dashboard.", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
