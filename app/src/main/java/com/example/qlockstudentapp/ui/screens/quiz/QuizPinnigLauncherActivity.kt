@@ -64,7 +64,7 @@ class QuizPinningLauncherActivity : ComponentActivity() {
                         quizLaunched = true
                         QuizLockdownActivity.launch(this, accessCode)
                     }
-                    attempt >= 5 -> {
+                    attempt >= 10 -> {
                         // ❌ User declined after ~3s
                         declinedHandled = true
                         Toast.makeText(this, "Screen pinning declined", Toast.LENGTH_SHORT).show()
