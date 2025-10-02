@@ -1,7 +1,6 @@
 package com.example.qlockstudentapp.utils
 
 import android.app.Activity
-import android.os.Build
 import android.view.WindowManager
 
 object LockdownManager {
@@ -17,5 +16,6 @@ object LockdownManager {
     /** Remove secure flags */
     fun disableLockdownMode(activity: Activity) {
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        activity.stopLockTask()
     }
 }
