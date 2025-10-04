@@ -27,6 +27,7 @@ class QuizResultActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val score = intent.getIntExtra(EXTRA_SCORE, 0)
+        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         setContent {
             QLockStudentAppTheme {
