@@ -38,6 +38,9 @@ class QuizLockdownActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         super.onCreate(savedInstanceState)
 
         accessCode = intent.getStringExtra(EXTRA_ACCESS_CODE) ?: ""
