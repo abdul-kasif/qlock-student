@@ -9,12 +9,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.qlockstudentapp.ui.screens.dashboard.DashboardScreen
 import com.example.qlockstudentapp.ui.screens.auth.EmailOtpScreen
+import com.example.qlockstudentapp.ui.screens.dashboard.DashboardScreen
 import com.example.qlockstudentapp.ui.screens.profile.ProfileSetupScreen
 import com.example.qlockstudentapp.ui.screens.quiz.QuizPermissionScreen
 import com.example.qlockstudentapp.ui.screens.splash.SplashScreen
-import com.example.qlockstudentapp.ui.screens.quiz.QuizResultScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -26,30 +25,22 @@ fun AppNavigation(navController: NavHostController) {
         composable("dashboard") { DashboardScreen(navController) }
 
         composable(
-            route = "quiz_result/{score}",
-            arguments = listOf(navArgument("score") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val score = backStackEntry.arguments?.getInt("score") ?: 0
-            QuizResultScreen(navController, score)
-        }
-
-        composable(
             route = "quiz_permission/{quizTitle}/{timeLimitMinutes}/{accessCode}",
             arguments = listOf(
                 navArgument("quizTitle") { type = NavType.StringType },
-                navArgument("timeLimitMinutes") { type = NavType.StringType },
+                navArgument("timeLimitMinutes") { type = NavType.IntType }, // ✅ Fix: Use IntType
                 navArgument("accessCode") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val quizTitle = backStackEntry.arguments?.getString("quizTitle") ?: "Quiz"
-            val timeLimitMinutes = backStackEntry.arguments?.getString("timeLimitMinutes")?.toInt() ?: 0
+            val timeLimitMinutes = backStackEntry.arguments?.getInt("timeLimitMinutes") ?: 0 // ✅ getInt()
             val accessCode = backStackEntry.arguments?.getString("accessCode") ?: ""
 
             QuizPermissionScreen(
+                navController = navController,
                 quizTitle = quizTitle,
                 timeLimitMinutes = timeLimitMinutes,
-                accessCode = accessCode,
-                navController = navController
+                accessCode = accessCode
             )
         }
     }

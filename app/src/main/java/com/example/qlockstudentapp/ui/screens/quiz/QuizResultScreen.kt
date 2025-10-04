@@ -11,11 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+
 
 @Composable
 fun QuizResultScreen(
-    navController: NavHostController,
+    onBackToDashboard: () -> Unit,
     score: Int
 ) {
     Column(
@@ -50,15 +50,11 @@ fun QuizResultScreen(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        Button(
-            onClick = {
-                navController.navigate("dashboard") {
-                    popUpTo("quiz_result") { inclusive = true }
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text("Back to Dashboard")
-        }
+            Button(
+                onClick = onBackToDashboard, // ✅ Call callback
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text("Back to Dashboard")
+            }
     }
 }

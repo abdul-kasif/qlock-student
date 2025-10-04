@@ -80,14 +80,12 @@ class QuizLockdownActivity : ComponentActivity() {
                     onQuizSubmit = { score ->
                         if (hasSubmitted) return@QuizLockdownScreenHost
                         hasSubmitted = true
-                        LockdownManager.disableLockdownMode(this)
                         QuizResultActivity.start(this, score)
                         finish()
                     },
                     onQuizError = { error ->
                         if (hasSubmitted) return@QuizLockdownScreenHost
                         hasSubmitted = true
-                        LockdownManager.disableLockdownMode(this)
                         Toast.makeText(this, "Submit failed: $error", Toast.LENGTH_LONG).show()
                         finish()
                     }
@@ -103,13 +101,11 @@ class QuizLockdownActivity : ComponentActivity() {
             quizViewModel.submitQuiz(
                 onSuccess = { response ->
                     hasSubmitted = true
-                    LockdownManager.disableLockdownMode(this)
                     QuizResultActivity.start(this, response.score)
                     finish()
                 },
                 onError = { error ->
                     hasSubmitted = true
-                    LockdownManager.disableLockdownMode(this)
                     Toast.makeText(this, "Auto-submit failed: $error", Toast.LENGTH_LONG).show()
                     finish()
                 }
@@ -128,10 +124,5 @@ class QuizLockdownActivity : ComponentActivity() {
             Toast.makeText(this, "Screen pinning not enabled. Returning to dashboard.", Toast.LENGTH_SHORT).show()
             finish()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        LockdownManager.disableLockdownMode(this)
     }
 }

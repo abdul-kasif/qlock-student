@@ -6,8 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.navigation.NavHostController
+import com.example.qlockstudentapp.MainActivity
 import com.example.qlockstudentapp.ui.theme.QLockStudentAppTheme
+import com.example.qlockstudentapp.utils.LockdownManager
 
 class QuizResultActivity : ComponentActivity() {
 
@@ -17,7 +18,7 @@ class QuizResultActivity : ComponentActivity() {
         fun start(context: Context, score: Int) {
             val intent = Intent(context, QuizResultActivity::class.java).apply {
                 putExtra(EXTRA_SCORE, score)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                // Do NOT add NEW_TASK — keep in same task
             }
             context.startActivity(intent)
         }
@@ -29,12 +30,26 @@ class QuizResultActivity : ComponentActivity() {
 
         setContent {
             QLockStudentAppTheme {
-                // Reuse your composable
                 QuizResultScreen(
-                    navController = NavHostController(this),
+                    onBackToDashboard = {
+                        // ✅ Disable lockdown HERE, then go to Dashboard
+                        LockdownManager.disableLockdownMode(this)
+                        val intent = Intent(this, MainActivity::class.java).apply {
+                            putExtra("goTo", "dashboard")
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        }
+                        startActivity(intent)
+                        finish()
+                    },
                     score = score
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Fallback: disable lockdown if activity is destroyed unexpectedly
+        LockdownManager.disableLockdownMode(this)
     }
 }
