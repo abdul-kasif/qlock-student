@@ -93,9 +93,6 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
                     // set timer (minutes → seconds)
                     timeLeft = quizData.time_limit_minutes.toLong() * 60L
 
-                    // start timer
-                    startTimer()
-
                     onSuccess()
                     Log.d(TAG, "Quiz loaded: ${'$'}{quizData.title}")
                 } else {
@@ -168,7 +165,8 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
      * Start the countdown timer. If already running, the call is ignored.
      * onTimeUp is invoked once when timeLeft reaches 0.
      */
-    fun startTimer(onTimeUp: (() -> Unit)? = null) {
+// Remove the default = null
+    fun startTimer(onTimeUp: () -> Unit) {
         if (isTimerRunning && timerJob?.isActive == true) return
 
         isTimerRunning = true
@@ -179,7 +177,7 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
             }
             if (timeLeft <= 0L) {
                 isTimerRunning = false
-                onTimeUp?.invoke()
+                onTimeUp() // Now safe to call directly
             }
         }
     }

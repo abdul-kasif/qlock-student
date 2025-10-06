@@ -38,9 +38,9 @@ fun QuizLockdownScreen(
     // Fetch quiz & start timer
     LaunchedEffect(Unit) {
         quizViewModel.fetchQuiz(accessCode) {
-            quizViewModel.startTimer {
+            quizViewModel.startTimer(onTimeUp = {
                 handleAutoSubmit(quizViewModel, context, onQuizSubmit, onQuizError)
-            }
+            })
         }
     }
 
