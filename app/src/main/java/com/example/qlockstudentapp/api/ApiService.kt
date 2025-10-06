@@ -41,9 +41,9 @@ interface ApiService {
         @Body request: QuizSubmissionRequest
     ): Response<QuizSubmissionResponse>
 
-    @GET("quiz_submissions/{access_code}")
+    @GET("quiz_submissions/{id}")
     suspend fun getQuizByAccessCode(
-        @Path("access_code") accessCode: String
+        @Path("id") accessCode: String
     ): Response<QuizAccessResponse>
 }
 
