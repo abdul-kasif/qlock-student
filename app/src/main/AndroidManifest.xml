@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.QLockStudentApp">
+        android:theme="@style/Theme.CampqTheme">
         <activity android:name=".ui.screens.quiz.QuizLockdownActivity" android:exported="false" />
         <activity android:name=".ui.screens.quiz.QuizResultActivity" android:exported="false" />
         <activity android:name=".ui.screens.quiz.QuizPinningLauncherActivity" android:exported="false" />
@@ -19,7 +19,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.QLockStudentApp">
+            android:theme="@style/Theme.CampqTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
