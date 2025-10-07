@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.qlockstudentapp"
+    namespace = "com.example.campqstudent"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.qlockstudentapp"
+        applicationId = "com.example.campqstudent"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

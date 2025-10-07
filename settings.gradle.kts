@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "QLockStudentApp"
+rootProject.name = "CampQ"
 include(":app")
