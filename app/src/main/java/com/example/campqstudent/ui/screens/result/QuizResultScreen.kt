@@ -1,5 +1,5 @@
 // ui/screens/quiz/QuizResultScreen.kt
-package com.example.campqstudent.ui.screens.quiz
+package com.example.campqstudent.ui.screens.result
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
