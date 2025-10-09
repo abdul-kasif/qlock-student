@@ -1,4 +1,4 @@
-package com.example.campqstudent.ui.screens.quiz
+package com.example.campqstudent.ui.screens.permission
 
 import android.app.ActivityManager
 import android.content.Context
@@ -9,8 +9,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.campqstudent.MainActivity
+import com.example.campqstudent.ui.screens.quiz.QuizLockdownActivity
 
 class QuizPinningLauncherActivity : ComponentActivity() {
 
@@ -32,15 +37,15 @@ class QuizPinningLauncherActivity : ComponentActivity() {
 
         // Minimal Compose content (loading UI)
         setContent {
-            androidx.compose.material3.Surface(
+            Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.background
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    androidx.compose.material3.Text(
+                    Text(
                         text = "Preparing Quiz...",
-                        modifier = Modifier.align(androidx.compose.ui.Alignment.Center),
-                        style = androidx.compose.material3.MaterialTheme.typography.headlineMedium
+                        modifier = Modifier.align(Alignment.Center),
+                        style = MaterialTheme.typography.headlineMedium
                     )
                 }
             }
@@ -54,7 +59,7 @@ class QuizPinningLauncherActivity : ComponentActivity() {
     }
 
     private fun pollLockTaskState(attempt: Int = 0) {
-        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
 
         window.decorView.postDelayed({
             if (!quizLaunched && !declinedHandled) {
@@ -62,7 +67,7 @@ class QuizPinningLauncherActivity : ComponentActivity() {
                     am.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE -> {
                         // ✅ User accepted → launch quiz
                         quizLaunched = true
-                        QuizLockdownActivity.launch(this, accessCode)
+                        QuizLockdownActivity.Companion.launch(this, accessCode)
                     }
                     attempt >= 10 -> {
                         // ❌ User declined after ~3s

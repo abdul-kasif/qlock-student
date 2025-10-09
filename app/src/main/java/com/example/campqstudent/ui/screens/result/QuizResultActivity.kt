@@ -1,13 +1,12 @@
-// ui/screens/quiz/QuizResultActivity.kt
-package com.example.campqstudent.ui.screens.quiz
+package com.example.campqstudent.ui.screens.result
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.campqstudent.MainActivity
-import com.example.campqstudent.ui.theme.CampQAppTheme
 import com.example.campqstudent.utils.LockdownManager
 
 class QuizResultActivity : ComponentActivity() {
@@ -27,16 +26,16 @@ class QuizResultActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val score = intent.getIntExtra(EXTRA_SCORE, 0)
-        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         setContent {
-            CampQAppTheme {
                 QuizResultScreen(
                     onBackToDashboard = {
                         // ✅ Disable lockdown HERE, then go to Dashboard
                         LockdownManager.disableLockdownMode(this)
                         val intent = Intent(this, MainActivity::class.java).apply {
                             putExtra("goTo", "dashboard")
+                            // Correct way to set flags on an Intent instance
                             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         }
                         startActivity(intent)
@@ -44,7 +43,6 @@ class QuizResultActivity : ComponentActivity() {
                     },
                     score = score
                 )
-            }
         }
     }
 
