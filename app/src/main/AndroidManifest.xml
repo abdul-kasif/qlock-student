@@ -13,8 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampqTheme">
         <activity android:name=".ui.screens.quiz.QuizLockdownActivity" android:exported="false" />
-        <activity android:name=".ui.screens.quiz.QuizResultActivity" android:exported="false" />
-        <activity android:name=".ui.screens.quiz.QuizPinningLauncherActivity" android:exported="false" />
+        <activity android:name=".ui.screens.result.QuizResultActivity" android:exported="false" />
+        <activity android:name=".ui.screens.permission.QuizPinningLauncherActivity" android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

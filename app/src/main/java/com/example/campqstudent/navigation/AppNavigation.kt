@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.example.campqstudent.ui.screens.auth.EmailOtpScreen
 import com.example.campqstudent.ui.screens.dashboard.DashboardScreen
 import com.example.campqstudent.ui.screens.profile.ProfileSetupScreen
-import com.example.campqstudent.ui.screens.quiz.QuizPermissionScreen
+import com.example.campqstudent.ui.screens.permission.QuizPermissionScreen
 import com.example.campqstudent.ui.screens.splash.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
