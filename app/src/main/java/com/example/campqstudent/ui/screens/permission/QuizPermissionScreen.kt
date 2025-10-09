@@ -1,4 +1,4 @@
-package com.example.campqstudent.ui.screens.quiz
+package com.example.campqstudent.ui.screens.permission
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
@@ -85,7 +85,7 @@ fun QuizPermissionScreen(
         // ✅ Accept → request pinning and go to quiz
         Button(
             onClick = {
-                QuizPinningLauncherActivity.start(context, accessCode)
+                QuizPinningLauncherActivity.Companion.start(context, accessCode)
                 activity.finish()
             },
             modifier = Modifier.fillMaxWidth(),
