@@ -14,7 +14,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import com.example.campqstudent.ui.screens.result.QuizResultActivity
-import com.example.campqstudent.ui.theme.CampQAppTheme
 import com.example.campqstudent.utils.LockdownManager
 import com.example.campqstudent.viewmodel.QuizViewModel
 
@@ -76,7 +75,6 @@ class QuizLockdownActivity : ComponentActivity() {
         }
 
         setContent {
-            CampQAppTheme {
                 QuizLockdownScreenHost(
                     accessCode = accessCode,
                     quizViewModel = quizViewModel,
@@ -93,7 +91,6 @@ class QuizLockdownActivity : ComponentActivity() {
                         finish()
                     }
                 )
-            }
         }
     }
 

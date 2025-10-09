@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.campqstudent.MainActivity
-import com.example.campqstudent.ui.theme.CampQAppTheme
 import com.example.campqstudent.utils.LockdownManager
 
 class QuizResultActivity : ComponentActivity() {
@@ -30,7 +29,6 @@ class QuizResultActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         setContent {
-            CampQAppTheme {
                 QuizResultScreen(
                     onBackToDashboard = {
                         // ✅ Disable lockdown HERE, then go to Dashboard
@@ -45,7 +43,6 @@ class QuizResultActivity : ComponentActivity() {
                     },
                     score = score
                 )
-            }
         }
     }
 
